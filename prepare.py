@@ -65,9 +65,12 @@ def drop_bad_columns(df):
         'regionidneighborhood',
         'threequarterbathnbr',
         'airconditioningdesc',
-        'heatingorsystemdesc'
+        'heatingorsystemdesc',
+        'threequarterbathnbr'
         ],
         axis=1)
+
+    return df
     
 def drop_nulls(df):
     # Change all remaining null/nan values to 0 or the variable mean, depending on best use case
@@ -77,6 +80,14 @@ def drop_nulls(df):
     df['lotsizesquarefeet'] = df['lotsizesquarefeet'].fillna(value=df['lotsizesquarefeet'].mean())
     df['regionidcity'] = df['regionidcity'].fillna(0)
     df['unitcnt'] = df['unitcnt'].fillna(0)
+
+    return df
+
+def handle_nulls(df):    
+    # We keep 99.41% of the data after dropping nulls
+    # round(df.dropna().shape[0] / df.shape[0], 4) returned .9941
+    df = df.dropna()
+    return df
 
 
 def optimize_types(df):
@@ -179,11 +190,12 @@ def prep_zillow(df):
     returns a clean dataframe
     Splits df into train, validate, test, and associated dfs on x and y 
     """
-    # df = handle_nulls(df)
 
     df = drop_bad_columns(df)
 
     df = drop_nulls(df)
+
+    df = handle_nulls(df)
 
     df = optimize_types(df)
 
@@ -200,15 +212,4 @@ def prep_zillow(df):
     # df.to_csv("zillow.csv", index=False)
 
     return df, train, validate, test, x_train, y_train, x_validate, y_validate, x_test, y_test
-
-
-# ----------------------------------------------------------- # 
-
-############## Regression Project acquire.py for reference (now: only what remains after transfer to new file above!)
-
-# def handle_nulls(df):    
-    # We keep 99.41% of the data after dropping nulls
-    # round(df.dropna().shape[0] / df.shape[0], 4) returned .9941
-    df = df.dropna()
-    return df
 
